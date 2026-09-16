@@ -3748,6 +3748,37 @@ html {
   color: #166534;
 }
 
+@media (max-width: 1023px) {
+  .login-auth-page .hero-logo-emphasis::before,
+  .login-auth-page .hero-logo-image,
+  .login-auth-presentation-logo,
+  .login-auth-presentation-logo-wrap::before {
+    animation: none !important;
+    filter: none !important;
+  }
+
+  .login-auth-form-ambient,
+  .login-auth-panel-border-glow,
+  .login-auth-panel-sheen {
+    display: none !important;
+  }
+
+  .login-auth-panel {
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.1),
+      0 16px 32px rgba(0, 6, 24, 0.35);
+  }
+
+  .login-auth-panel-inner::before {
+    display: none;
+  }
+
+  .login-auth-brand-mobile .hero-logo-emphasis {
+    transform: scale(0.82);
+    transform-origin: center top;
+  }
+}
+
 @media (max-width: 767px) {
   html {
     scroll-behavior: auto;

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { registerMember } from "@/actions/membership";
 import {
@@ -26,10 +26,17 @@ import { LoginAuthPresentation } from "@/components/auth/LoginAuthPresentation";
 
 type AuthMode = "login" | "register" | "recover";
 
-export function LoginForm() {
+type Props = {
+  nextPath?: string;
+  initialError?: string | null;
+};
+
+export function LoginForm({
+  nextPath = "/admin",
+  initialError = null,
+}: Props) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const nextPath = searchParams.get("next") ?? "/admin";
+  const [, startModeTransition] = useTransition();
 
   const [mode, setMode] = useState<AuthMode>("login");
   const [fullName, setFullName] = useState("");
@@ -40,27 +47,18 @@ export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState<string | null>(() => {
-    if (searchParams.get("error") === "auth") {
-      return "Não foi possível autenticar. Tente novamente.";
-    }
-    if (searchParams.get("error") === "rejected") {
-      return "Sua adesão foi recusada pela diretoria. Entre em contato com a ADAE-MT.";
-    }
-    if (searchParams.get("error") === "blocked") {
-      return "Sua conta está bloqueada. Informe seu e-mail ou ID DeMolay abaixo para ver os detalhes.";
-    }
-    return null;
-  });
+  const [error, setError] = useState<string | null>(initialError);
   const [success, setSuccess] = useState<string | null>(null);
   const [blockedInfo, setBlockedInfo] = useState<MemberBlockInfo | null>(null);
   const { isPending, run } = useSubmitLock();
 
   function switchMode(nextMode: AuthMode) {
-    setMode(nextMode);
-    setError(null);
-    setSuccess(null);
-    setBlockedInfo(null);
+    startModeTransition(() => {
+      setMode(nextMode);
+      setError(null);
+      setSuccess(null);
+      setBlockedInfo(null);
+    });
   }
 
   function handleRecoverPassword(event: React.FormEvent<HTMLFormElement>) {
@@ -265,13 +263,7 @@ export function LoginForm() {
         <div className="login-auth-shell w-full">
           <div className="login-auth-brand-mobile mb-4 text-center lg:hidden">
             <Link href="/" className="login-auth-logo-link inline-block">
-              <div className="hero-logo-emphasis relative inline-block">
-                <Logo
-                  size="panel"
-                  priority
-                  className="hero-logo-image relative z-10 mx-auto"
-                />
-              </div>
+              <Logo size="md" priority className="mx-auto" />
             </Link>
             <p className="login-auth-eyebrow mt-3">Ordem DeMolay · Alumni</p>
             <h1 className="section-title login-auth-title mt-1 text-xl font-bold">
