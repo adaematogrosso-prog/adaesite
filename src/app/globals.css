@@ -2429,11 +2429,11 @@ html {
 }
 
 .animate-fade-in-up {
-  animation: fade-in-up 0.9s ease-out forwards;
+  animation: fade-in-up 0.9s ease-out both;
 }
 
 .animate-fade-in {
-  animation: fade-in 1s ease-out forwards;
+  animation: fade-in 1s ease-out both;
 }
 
 .animate-float-soft {
@@ -3720,6 +3720,12 @@ html {
   .animate-wave-drift-reverse {
     animation: none !important;
     transform: none !important;
+  }
+
+  .animate-fade-in-up,
+  .animate-fade-in,
+  .reveal-on-scroll {
+    opacity: 1 !important;
   }
 
   .hero-logo-image,

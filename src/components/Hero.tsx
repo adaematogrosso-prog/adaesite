@@ -11,18 +11,15 @@ export function Hero() {
       <HeroBackgroundLayers />
 
       <div className="relative z-20 mx-auto flex max-w-6xl flex-col items-center gap-10 px-4 py-16 text-center sm:px-6 md:flex-row md:items-center md:gap-12 md:py-24 md:text-left lg:gap-16">
-        <div
-          className="animate-fade-in-up shrink-0 opacity-0"
-          style={{ animationFillMode: "both" }}
-        >
+        <div className="animate-fade-in-up shrink-0">
           <div className="hero-logo-emphasis relative inline-block">
             <Logo size="xl" priority className="hero-logo-image relative z-10" />
           </div>
         </div>
 
         <div
-          className="animate-fade-in-up max-w-2xl opacity-0"
-          style={{ animationDelay: "150ms", animationFillMode: "both" }}
+          className="animate-fade-in-up max-w-2xl"
+          style={{ animationDelay: "150ms" }}
         >
           <p className="section-title text-sm font-medium uppercase tracking-[0.2em] text-gold">
             Bem-vindo à
