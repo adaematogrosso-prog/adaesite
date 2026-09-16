@@ -119,7 +119,7 @@ export function SiteHeader({
 
   return (
     <header
-      className={`sticky top-0 z-50 border-b transition-all duration-300 ${
+      className={`safe-area-top sticky top-0 z-50 border-b transition-all duration-300 ${
         scrolled
           ? "border-gold/30 bg-royal-blue/95 shadow-xl shadow-black/20 md:backdrop-blur-md"
           : "border-gold/20 bg-royal-blue shadow-lg"

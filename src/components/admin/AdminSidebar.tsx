@@ -169,7 +169,7 @@ export function AdminSidebar({
 
   return (
     <>
-      <header className="admin-mobile-header relative z-30 flex shrink-0 items-center justify-between gap-3 border-b border-gold/20 bg-royal-blue px-4 py-3 lg:hidden">
+      <header className="admin-mobile-header sticky top-0 z-50 flex shrink-0 items-center justify-between gap-3 border-b border-gold/20 bg-royal-blue px-4 pb-3 lg:hidden">
         <button
           type="button"
           onClick={() => setMenuOpen((open) => !open)}
@@ -199,14 +199,14 @@ export function AdminSidebar({
       {menuOpen ? (
         <button
           type="button"
-          className="fixed inset-0 z-40 bg-black/55 lg:hidden"
+          className="admin-sidebar-backdrop fixed z-40 bg-black/55 lg:hidden"
           aria-label="Fechar menu"
           onClick={() => setMenuOpen(false)}
         />
       ) : null}
 
       <aside
-        className={`admin-sidebar fixed inset-y-0 left-0 z-50 w-[min(100vw-2.5rem,18rem)] shrink-0 flex-col shadow-2xl transition-transform duration-300 lg:sticky lg:top-0 lg:z-auto lg:h-full lg:w-64 lg:translate-x-0 lg:overflow-y-auto lg:shadow-none lg:transition-none ${
+        className={`admin-sidebar fixed left-0 z-[45] w-[min(85vw,20rem)] shrink-0 flex-col shadow-2xl transition-transform duration-300 lg:sticky lg:top-0 lg:z-auto lg:h-full lg:max-h-none lg:w-64 lg:translate-x-0 lg:overflow-y-auto lg:shadow-none lg:transition-none ${
           menuOpen
             ? "flex translate-x-0"
             : "hidden lg:flex lg:translate-x-0"
@@ -215,16 +215,7 @@ export function AdminSidebar({
         <AdminSidebarBackground />
 
         <div className="admin-sidebar-inner relative z-[1] flex min-h-0 flex-1 flex-col overflow-y-auto">
-          <div className="admin-sidebar-brand relative flex flex-col items-center px-5 py-6 text-center">
-            <button
-              type="button"
-              onClick={() => setMenuOpen(false)}
-              className="absolute right-3 top-3 inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/15 text-white/80 transition hover:border-gold/40 hover:text-gold lg:hidden"
-              aria-label="Fechar menu"
-            >
-              <MenuIcon open />
-            </button>
-
+          <div className="admin-sidebar-brand flex flex-col items-center px-5 py-6 text-center">
             <div className="admin-sidebar-logo-emphasis relative inline-block">
               <Logo size="panel" className="admin-sidebar-logo relative z-10" />
             </div>
