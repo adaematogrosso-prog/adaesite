@@ -206,8 +206,10 @@ export function AdminSidebar({
       ) : null}
 
       <aside
-        className={`admin-sidebar fixed inset-y-0 left-0 z-50 flex w-[min(100vw-2.5rem,18rem)] shrink-0 flex-col transition-transform duration-300 lg:sticky lg:top-0 lg:z-auto lg:h-full lg:w-64 lg:translate-x-0 lg:overflow-y-auto lg:transition-none ${
-          menuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        className={`admin-sidebar fixed inset-y-0 left-0 z-50 w-[min(100vw-2.5rem,18rem)] shrink-0 flex-col shadow-2xl transition-transform duration-300 lg:sticky lg:top-0 lg:z-auto lg:h-full lg:w-64 lg:translate-x-0 lg:overflow-y-auto lg:shadow-none lg:transition-none ${
+          menuOpen
+            ? "flex translate-x-0"
+            : "hidden lg:flex lg:translate-x-0"
         }`}
       >
         <AdminSidebarBackground />

@@ -36,7 +36,7 @@ export default async function AdminLayout({
   );
 
   return (
-    <div className="flex h-dvh flex-col overflow-hidden lg:flex-row">
+    <div className="flex min-h-dvh flex-col lg:h-dvh lg:overflow-hidden lg:flex-row">
       <AdminSidebar
         isAdmin={isAdmin}
         canApprove={canApprove}

@@ -843,6 +843,21 @@ html {
   overflow: hidden;
 }
 
+@media (max-width: 1023px) {
+  .admin-main-inner:has(.admin-dashboard) {
+    height: auto;
+    overflow: visible;
+  }
+
+  .admin-main:has(.admin-dashboard) {
+    overflow-y: auto;
+  }
+
+  .admin-dashboard-grid {
+    align-content: start;
+  }
+}
+
 .admin-dashboard {
   width: 100%;
   min-height: 0;

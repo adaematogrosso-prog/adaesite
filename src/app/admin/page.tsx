@@ -93,7 +93,7 @@ export default async function AdminDashboardPage() {
   ].filter((card) => card.show);
 
   return (
-    <div className="admin-dashboard mx-auto flex h-full max-w-5xl flex-col overflow-hidden">
+    <div className="admin-dashboard mx-auto flex w-full max-w-5xl flex-col lg:h-full lg:overflow-hidden">
       <div className="admin-dashboard-header shrink-0 text-center">
         <h1 className="section-title text-2xl font-bold text-royal-blue sm:text-3xl">
           Painel Administrativo
@@ -103,7 +103,7 @@ export default async function AdminDashboardPage() {
         </p>
       </div>
 
-      <div className="admin-dashboard-grid mt-5 min-h-0 flex-1 sm:mt-6">
+      <div className="admin-dashboard-grid mt-5 sm:mt-6 lg:min-h-0 lg:flex-1">
         {cards.map((card) => (
           <DashboardCardLink
             key={card.href}
