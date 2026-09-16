@@ -7,13 +7,18 @@ import type { User } from "@supabase/supabase-js";
 import { Logo } from "@/components/Logo";
 import { SITE_SHORT_NAME } from "@/lib/constants";
 
-const navLinks = [
+const baseNavLinks = [
   { href: "/#historia", label: "História", sectionId: "historia", type: "section" as const },
   { href: "/#seniors", label: "Sêniors", sectionId: "seniors", type: "section" as const },
   { href: "/#diretoria", label: "Diretoria", sectionId: "diretoria", type: "section" as const },
   { href: "/noticias", label: "Notícias", type: "page" as const },
-  { href: "/secretaria", label: "Secretaria", type: "page" as const },
 ];
+
+const secretariaNavLink = {
+  href: "/secretaria",
+  label: "Secretaria",
+  type: "page" as const,
+};
 
 type Props = {
   user: User | null;
@@ -42,7 +47,7 @@ export function SiteHeader({
   }, []);
 
   useEffect(() => {
-    const sections = navLinks
+    const sections = baseNavLinks
       .filter((link) => link.type === "section")
       .map((link) => document.getElementById(link.sectionId!))
       .filter(Boolean) as HTMLElement[];
@@ -75,7 +80,7 @@ export function SiteHeader({
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  function isLinkActive(link: (typeof navLinks)[number]) {
+  function isLinkActive(link: (typeof baseNavLinks)[number] | typeof secretariaNavLink) {
     if (link.type === "page") {
       return pathname.startsWith(link.href);
     }
@@ -94,6 +99,11 @@ export function SiteHeader({
   const showMemberLinks = !!user && isApprovedMember && !hasPanelAccess;
   const showPanelButton = !!user && hasPanelAccess;
   const showLoginButton = !user;
+  const showSecretariaLink =
+    !!user && (isApprovedMember || hasPanelAccess);
+  const navLinks = showSecretariaLink
+    ? [...baseNavLinks, secretariaNavLink]
+    : baseNavLinks;
 
   return (
     <header
