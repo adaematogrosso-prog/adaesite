@@ -2663,20 +2663,7 @@ html {
 }
 
 .login-auth-brand-column {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  order: 1;
-  min-height: 0;
-  height: 100%;
-  overflow: hidden;
-  padding: 1.25rem 1.5rem;
-  background:
-    radial-gradient(ellipse 90% 70% at 50% 30%, rgba(212, 175, 55, 0.06) 0%, transparent 58%),
-    radial-gradient(ellipse 70% 55% at 50% 65%, rgba(80, 140, 230, 0.05) 0%, transparent 62%),
-    linear-gradient(180deg, rgba(0, 8, 28, 0.05) 0%, rgba(0, 14, 40, 0.12) 100%);
-  border-bottom: 1px solid rgba(212, 175, 55, 0.14);
+  display: none;
 }
 
 .login-auth-layout-register .login-auth-form-column {
@@ -2793,10 +2780,20 @@ html {
   }
 
   .login-auth-brand-column {
-    order: 2;
+    display: flex;
     flex: 0 0 50%;
     max-width: 50%;
+    align-items: center;
+    justify-content: center;
+    order: 2;
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
     padding: 1.25rem 2rem;
+    background:
+      radial-gradient(ellipse 90% 70% at 50% 30%, rgba(212, 175, 55, 0.06) 0%, transparent 58%),
+      radial-gradient(ellipse 70% 55% at 50% 65%, rgba(80, 140, 230, 0.05) 0%, transparent 62%),
+      linear-gradient(180deg, rgba(0, 8, 28, 0.05) 0%, rgba(0, 14, 40, 0.12) 100%);
     border-bottom: none;
   }
 }
@@ -3520,6 +3517,38 @@ html {
 }
 
 @media (max-width: 1023px) {
+  .login-auth-page {
+    height: auto;
+    min-height: 100dvh;
+    max-height: none;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .login-auth-layout {
+    height: auto;
+    min-height: 100dvh;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .login-auth-form-column {
+    height: auto;
+    overflow: visible;
+    align-items: flex-start;
+    padding-top: 1rem;
+    padding-bottom: 2rem;
+  }
+
+  .login-auth-layout-register .login-auth-form-column {
+    overflow: visible;
+  }
+
+  .login-auth-panel-inner-register.login-auth-panel-inner-scroll {
+    max-height: none;
+    overflow: visible;
+  }
+
   .login-auth-layout:not(.login-auth-layout-register) .login-auth-brand-mobile {
     margin-bottom: 0.75rem;
   }
@@ -3735,6 +3764,26 @@ html {
 
   .landing-flow-fx {
     contain: strict;
+  }
+
+  .login-auth-bg-sparkles,
+  .login-auth-bg-shimmer,
+  .login-auth-bg-shimmer-gold,
+  .login-auth-bg-orbs,
+  .login-auth-bg-banners,
+  .login-auth-bg-emblem,
+  .login-auth-bg-rays,
+  .login-auth-bg-beams {
+    display: none !important;
+  }
+
+  .login-auth-bg-mesh,
+  .login-auth-bg-glow,
+  .login-auth-form-ambient,
+  .login-auth-panel-border-glow,
+  .login-auth-panel-sheen,
+  .login-auth-orb {
+    animation: none !important;
   }
 }
 

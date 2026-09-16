@@ -11,10 +11,10 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <div className="login-auth-page relative h-dvh max-h-dvh overflow-hidden">
+    <div className="login-auth-page relative min-h-dvh overflow-x-hidden overflow-y-auto lg:h-dvh lg:max-h-dvh lg:overflow-hidden">
       <LoginBackground />
 
-      <div className="relative z-10 h-full max-h-dvh overflow-hidden">
+      <div className="relative z-10 min-h-dvh lg:h-full lg:max-h-dvh lg:overflow-hidden">
         <Suspense
           fallback={
             <div className="login-auth-loading flex h-full min-h-0 items-center justify-center px-4 text-sm">

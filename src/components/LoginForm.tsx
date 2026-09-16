@@ -255,7 +255,7 @@ export function LoginForm() {
 
   return (
     <div
-      className={`login-auth-layout h-full${
+      className={`login-auth-layout min-h-dvh lg:h-full lg:max-h-dvh${
         mode === "register" ? " login-auth-layout-register" : ""
       }`}
     >
