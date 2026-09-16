@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { requireApprover, requirePanelAccess } from "@/lib/auth/admin";
 import { isPlatformAdminUser } from "@/lib/auth/admin-users.server";
+import { confirmMemberEmail } from "@/lib/auth/email-confirm.server";
+import { getMemberAuthHealth } from "@/lib/auth/post-login.server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { parseProfileExtraFields } from "@/lib/members/profile-fields";
@@ -249,6 +251,66 @@ export async function updateMemberByApprover(
     }
   }
 
+  await confirmMemberEmail(userId);
+
+  revalidateMemberAdminPaths(userId);
+  return { success: true };
+}
+
+export async function fetchMemberAuthHealth(userId: string) {
+  const { canApprove, isAdmin } = await requirePanelAccess();
+
+  if (!canApprove && !isAdmin) {
+    return { error: "Sem permissão." as const };
+  }
+
+  return { health: await getMemberAuthHealth(userId) };
+}
+
+export async function repairMemberLogin(userId: string): Promise<ActionResult> {
+  const { canApprove, isAdmin } = await requirePanelAccess();
+
+  if (!canApprove && !isAdmin) {
+    return { error: "Sem permissão para corrigir login." };
+  }
+
+  const admin = createAdminClient();
+  const { data: profile, error: profileError } = await admin
+    .from("adae_member_profiles")
+    .select("email, full_name, member_id, phone, birth_date")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (profileError || !profile) {
+    return { error: "Cadastro do membro não encontrado." };
+  }
+
+  try {
+    const { error: authError } = await admin.auth.admin.updateUserById(userId, {
+      email: profile.email,
+      email_confirm: true,
+      user_metadata: {
+        full_name: profile.full_name,
+        member_id: profile.member_id,
+        phone: profile.phone ?? "",
+        birth_date: profile.birth_date ?? "",
+      },
+    });
+
+    if (authError) {
+      return {
+        error:
+          "Não foi possível sincronizar o login. Verifique se o e-mail não está em outra conta.",
+      };
+    }
+  } catch {
+    return {
+      error:
+        "Não foi possível sincronizar o login. Configure SUPABASE_SERVICE_ROLE_KEY.",
+    };
+  }
+
+  await confirmMemberEmail(userId);
   revalidateMemberAdminPaths(userId);
   return { success: true };
 }

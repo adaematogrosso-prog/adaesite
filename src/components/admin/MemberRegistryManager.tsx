@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { AdminMemberEditForm } from "@/components/admin/AdminMemberEditForm";
 import { MemberAccessBlockPanel } from "@/components/admin/MemberAccessBlockPanel";
+import { MemberLoginHealthPanel } from "@/components/admin/MemberLoginHealthPanel";
 import { MemberSearchCombobox } from "@/components/admin/MemberSearchCombobox";
 import type { MemberProfile, MembershipStatus } from "@/types/database";
 
@@ -67,6 +68,7 @@ export function MemberRegistryManager({
 
       {selectedProfile ? (
         <>
+          <MemberLoginHealthPanel userId={selectedProfile.user_id} />
           <AdminMemberEditForm
             key={selectedProfile.user_id}
             profile={selectedProfile}

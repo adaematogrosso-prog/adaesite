@@ -4,16 +4,16 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { registerMember } from "@/actions/membership";
+import { registerMember, resolveLoginEmail } from "@/actions/membership";
 import {
   precheckLogin,
   reportFailedLogin,
   reportSuccessfulLogin,
+  getPostLoginAccess,
 } from "@/actions/auth-security";
 import {
   SITE_SHORT_NAME,
   SUPPORT_EMAIL,
-  type ExecutiveRole,
 } from "@/lib/constants";
 import {
   executiveRoleHasSecretariaAccess,
@@ -50,7 +50,21 @@ export function LoginForm({
   const [error, setError] = useState<string | null>(initialError);
   const [success, setSuccess] = useState<string | null>(null);
   const [blockedInfo, setBlockedInfo] = useState<MemberBlockInfo | null>(null);
+  const [resolvedLoginEmail, setResolvedLoginEmail] = useState<string | null>(
+    null,
+  );
   const { isPending, run } = useSubmitLock();
+
+  async function refreshResolvedLoginEmail(identifier: string) {
+    const trimmed = identifier.trim();
+    if (!trimmed) {
+      setResolvedLoginEmail(null);
+      return;
+    }
+
+    const result = await resolveLoginEmail(trimmed);
+    setResolvedLoginEmail(result.email ?? null);
+  }
 
   function switchMode(nextMode: AuthMode) {
     startModeTransition(() => {
@@ -131,27 +145,9 @@ export function LoginForm({
 
       await reportSuccessfulLogin(loginIdentifier);
 
-      const [{ data: adminData }, { data: profile }, { data: boardData }] =
-        await Promise.all([
-          supabase
-            .from("adae_admin_users")
-            .select("user_id")
-            .eq("user_id", data.user.id)
-            .maybeSingle(),
-          supabase
-            .from("adae_member_profiles")
-            .select("status, is_blocked")
-            .eq("user_id", data.user.id)
-            .maybeSingle(),
-          supabase
-            .from("adae_executive_members")
-            .select("role")
-            .eq("linked_user_id", data.user.id)
-            .eq("is_active", true)
-            .maybeSingle(),
-        ]);
+      const access = await getPostLoginAccess(data.user.id);
 
-      if (profile?.is_blocked && !adminData) {
+      if (access.isBlocked && !access.isAdmin) {
         await supabase.auth.signOut();
         const refreshed = await precheckLogin(loginIdentifier);
         if (refreshed.blocked) {
@@ -162,9 +158,9 @@ export function LoginForm({
         return;
       }
 
-      const executiveRole = boardData?.role as ExecutiveRole | undefined;
+      const executiveRole = access.executiveRole;
 
-      if (adminData) {
+      if (access.isAdmin) {
         router.push(nextPath);
         router.refresh();
         return;
@@ -200,19 +196,45 @@ export function LoginForm({
         return;
       }
 
-      if (profile?.status === "pending") {
+      if (access.accountMismatch) {
+        await supabase.auth.signOut();
+        setError(
+          access.mismatchProfileStatus === "approved"
+            ? "Existe um cadastro aprovado com este e-mail, mas vinculado a outra conta de login. Peça à diretoria para redefinir sua senha em Painel → Membros ADAE-MT (não crie uma conta nova no Supabase)."
+            : "Sua conta de login não está vinculada ao cadastro ADAE-MT. Peça à diretoria para revisar seu cadastro em Painel → Membros ADAE-MT.",
+        );
+        return;
+      }
+
+      if (access.profileMissing) {
+        await supabase.auth.signOut();
+        setError(
+          "Seu login foi criado, mas o cadastro ADAE-MT não está vinculado. Peça à diretoria para completar ou corrigir seu cadastro.",
+        );
+        return;
+      }
+
+      if (access.emailMismatch) {
+        await supabase.auth.signOut();
+        setError(
+          "O e-mail do login não coincide com o cadastro. Peça à diretoria para salvar novamente e-mail e senha em Painel → Membros ADAE-MT.",
+        );
+        return;
+      }
+
+      if (access.profileStatus === "pending") {
         router.push("/aguardando-aprovacao");
         router.refresh();
         return;
       }
 
-      if (profile?.status === "rejected") {
+      if (access.profileStatus === "rejected") {
         await supabase.auth.signOut();
         setError("Sua adesão foi recusada pela diretoria.");
         return;
       }
 
-      if (profile?.status !== "approved") {
+      if (access.profileStatus !== "approved") {
         await supabase.auth.signOut();
         setError("Seu cadastro ainda não foi aprovado.");
         return;
@@ -242,7 +264,14 @@ export function LoginForm({
         result.error ??
           "Cadastro enviado! Sua adesão será analisada pelo Presidente, Vice-Presidente ou administrador. Você receberá acesso após a aprovação.",
       );
+      const registeredEmail = (
+        (formData.get("email") as string) ?? ""
+      )
+        .trim()
+        .toLowerCase();
       setMode("login");
+      setLoginIdentifier(registeredEmail);
+      setResolvedLoginEmail(registeredEmail || null);
       setPassword("");
       setConfirmPassword("");
       setMemberId("");
@@ -393,10 +422,22 @@ export function LoginForm({
                           required
                           autoComplete="username"
                           value={loginIdentifier}
-                          onChange={(e) => setLoginIdentifier(e.target.value)}
+                          onChange={(e) => {
+                            setLoginIdentifier(e.target.value);
+                            setResolvedLoginEmail(null);
+                          }}
+                          onBlur={() => {
+                            void refreshResolvedLoginEmail(loginIdentifier);
+                          }}
                           className="login-auth-input login-auth-input-lg mt-1.5 w-full rounded-xl px-3.5 outline-none transition"
                           placeholder="seu@email.com ou 130035"
                         />
+                        {resolvedLoginEmail ? (
+                          <p className="login-auth-hint mt-1.5 text-xs">
+                            Entrada será feita com o e-mail{" "}
+                            <strong>{resolvedLoginEmail}</strong>
+                          </p>
+                        ) : null}
                       </div>
 
                       <div className="login-auth-field">

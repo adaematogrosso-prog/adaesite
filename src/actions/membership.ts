@@ -203,6 +203,33 @@ async function persistRegistrationProfile(payload: RegistrationProfilePayload) {
   return result;
 }
 
+function mapSignUpError(message: string | undefined) {
+  const normalized = (message ?? "").toLowerCase();
+
+  if (normalized.includes("already registered")) {
+    return "Este e-mail já está cadastrado. Use a aba Entrar com a mesma senha.";
+  }
+
+  if (
+    normalized.includes("password") &&
+    (normalized.includes("weak") ||
+      normalized.includes("short") ||
+      normalized.includes("least"))
+  ) {
+    return "A senha não atende aos requisitos de segurança. Use pelo menos 6 caracteres, incluindo letras e números.";
+  }
+
+  if (normalized.includes("rate limit") || normalized.includes("too many")) {
+    return "Muitas tentativas seguidas. Aguarde alguns minutos e tente novamente.";
+  }
+
+  if (normalized.includes("invalid") && normalized.includes("email")) {
+    return "Informe um endereço de e-mail válido.";
+  }
+
+  return "Não foi possível criar a conta. Tente novamente ou contate a diretoria.";
+}
+
 export async function registerMember(formData: FormData): Promise<ActionResult> {
   const fullName = (formData.get("fullName") as string)?.trim();
   const memberId = (formData.get("memberId") as string)?.trim().toUpperCase();
@@ -253,10 +280,9 @@ export async function registerMember(formData: FormData): Promise<ActionResult> 
   });
 
   if (authError || !data.user) {
+    console.error("registerMember signUp error:", authError);
     return {
-      error: authError?.message.includes("already registered")
-        ? "Este e-mail já está cadastrado. Use a aba Entrar com a mesma senha."
-        : "Não foi possível criar a conta. Tente novamente.",
+      error: mapSignUpError(authError?.message),
     };
   }
 

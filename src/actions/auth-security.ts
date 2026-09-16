@@ -10,6 +10,7 @@ import {
   MAX_FAILED_LOGIN_ATTEMPTS,
   type MemberBlockInfo,
 } from "@/lib/auth/login-security.server";
+import { resolvePostLoginAccess } from "@/lib/auth/post-login.server";
 
 export type LoginPrecheckResult = {
   email?: string;
@@ -88,4 +89,8 @@ export async function reportSuccessfulLogin(identifier: string) {
 
 export async function unlockAccount(token: string) {
   return unlockAccountByToken(token);
+}
+
+export async function getPostLoginAccess(userId: string) {
+  return resolvePostLoginAccess(userId);
 }
