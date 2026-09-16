@@ -591,6 +591,10 @@ html {
 }
 
 /* Admin: menu lateral */
+.admin-mobile-header {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
 .admin-sidebar {
   position: relative;
   isolation: isolate;
@@ -798,6 +802,13 @@ html {
   box-shadow:
     inset 3px 0 0 var(--gold),
     0 4px 18px rgba(0, 0, 0, 0.18);
+}
+
+@media (max-width: 1023px) {
+  .admin-sidebar-link {
+    white-space: normal;
+    line-height: 1.35;
+  }
 }
 
 .admin-page-header {
