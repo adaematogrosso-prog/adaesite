@@ -6,7 +6,9 @@ export function PwaRegister() {
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return;
 
-    void navigator.serviceWorker.register("/sw.js").catch(() => {
+    void navigator.serviceWorker.register("/sw.js").then((registration) => {
+      void registration.update();
+    }).catch(() => {
       // Falha silenciosa: PWA continua instalável via manifest.
     });
   }, []);

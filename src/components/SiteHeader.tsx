@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
@@ -36,9 +36,19 @@ export function SiteHeader({
   const [activeSection, setActiveSection] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const activeSectionRef = useRef("");
+
   useEffect(() => {
+    let ticking = false;
+
     function handleScroll() {
-      setScrolled(window.scrollY > 12);
+      if (ticking) return;
+
+      ticking = true;
+      requestAnimationFrame(() => {
+        setScrolled(window.scrollY > 12);
+        ticking = false;
+      });
     }
 
     handleScroll();
@@ -60,11 +70,13 @@ export function SiteHeader({
           .filter((entry) => entry.isIntersecting)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
 
-        if (visible[0]) {
-          setActiveSection(visible[0].target.id);
+        const nextSection = visible[0]?.target.id ?? "";
+        if (nextSection && nextSection !== activeSectionRef.current) {
+          activeSectionRef.current = nextSection;
+          setActiveSection(nextSection);
         }
       },
-      { rootMargin: "-40% 0px -45% 0px", threshold: [0, 0.25, 0.5] },
+      { rootMargin: "-40% 0px -45% 0px", threshold: [0.25, 0.5] },
     );
 
     sections.forEach((section) => observer.observe(section));
@@ -109,7 +121,7 @@ export function SiteHeader({
     <header
       className={`sticky top-0 z-50 border-b transition-all duration-300 ${
         scrolled
-          ? "border-gold/30 bg-royal-blue/95 shadow-xl shadow-black/20 backdrop-blur-md"
+          ? "border-gold/30 bg-royal-blue/95 shadow-xl shadow-black/20 md:backdrop-blur-md"
           : "border-gold/20 bg-royal-blue shadow-lg"
       }`}
     >
