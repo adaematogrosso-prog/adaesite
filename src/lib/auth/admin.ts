@@ -500,7 +500,13 @@ export async function requireSelfProfileEditor() {
 
     );
 
-    return { user, profile: resolvedProfile, hasPanelAccess };
+    return {
+      user,
+      profile: resolvedProfile,
+      hasPanelAccess,
+      isAdmin,
+      canApprove,
+    };
 
   }
 
