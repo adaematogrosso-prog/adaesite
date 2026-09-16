@@ -15,6 +15,13 @@ import {
   formatProfession,
 } from "@/lib/members/profile-text";
 import { MemberProfileExtraFields } from "@/components/MemberProfileExtraFields";
+import { DemolayOrganizationSelect } from "@/components/DemolayOrganizationSelect";
+import { ALUMNI_COLLEGES_MT } from "@/lib/demolay/alumni-colleges-mt";
+import { DEMOLAY_CHAPTERS_MT } from "@/lib/demolay/chapters-mt";
+import {
+  formatAlumniCollegeLabel,
+  formatChapterLabel,
+} from "@/lib/demolay/organizations";
 import type { MemberProfile, MembershipStatus } from "@/types/database";
 
 type Props = {
@@ -427,45 +434,31 @@ export function AdminMemberEditForm({ profile, canEditPassword }: Props) {
           />
         </div>
 
-        <div>
-          <label
-            htmlFor={`member-college-${profile.user_id}`}
-            className="block text-sm font-medium text-foreground"
-          >
-            Colégio Alumni afiliado
-          </label>
-          <input
-            id={`member-college-${profile.user_id}`}
-            name="alumniCollege"
-            type="text"
-            value={alumniCollege}
-            onChange={(event) => setAlumniCollege(event.target.value)}
-            onBlur={() =>
-              setAlumniCollege((value) => formatOrganizationName(value))
-            }
-            className="mt-1 w-full rounded-lg border border-gold/20 px-4 py-2.5 outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/20"
-          />
-        </div>
+        <DemolayOrganizationSelect
+          id={`member-college-${profile.user_id}`}
+          name="alumniCollege"
+          label="Colégio Alumni afiliado"
+          value={alumniCollege}
+          options={ALUMNI_COLLEGES_MT}
+          formatLabel={formatAlumniCollegeLabel}
+          onValueChange={setAlumniCollege}
+          allowCustom
+          placeholder="Selecione o colégio alumni"
+          customPlaceholder="Ex.: Colégio Alumni Nome nº 000"
+        />
 
-        <div>
-          <label
-            htmlFor={`member-chapter-${profile.user_id}`}
-            className="block text-sm font-medium text-foreground"
-          >
-            Capítulo
-          </label>
-          <input
-            id={`member-chapter-${profile.user_id}`}
-            name="chapterName"
-            type="text"
-            value={chapterName}
-            onChange={(event) => setChapterName(event.target.value)}
-            onBlur={() =>
-              setChapterName((value) => formatOrganizationName(value))
-            }
-            className="mt-1 w-full rounded-lg border border-gold/20 px-4 py-2.5 outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/20"
-          />
-        </div>
+        <DemolayOrganizationSelect
+          id={`member-chapter-${profile.user_id}`}
+          name="chapterName"
+          label="Capítulo DeMolay"
+          value={chapterName}
+          options={DEMOLAY_CHAPTERS_MT}
+          formatLabel={formatChapterLabel}
+          onValueChange={setChapterName}
+          allowCustom
+          placeholder="Selecione o capítulo"
+          customPlaceholder="Ex.: Capítulo Nome nº 000"
+        />
 
         <div className="sm:col-span-2">
           <MemberProfileExtraFields

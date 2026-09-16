@@ -49,12 +49,6 @@ export default async function AdminDashboardPage() {
 
   const cards: DashboardCard[] = [
     {
-      href: "/admin/membros",
-      title: "Membros ADAE-MT",
-      description: "Consulte a diretoria e os membros aprovados.",
-      show: canApprove || isAdmin,
-    },
-    {
       href: "/admin/noticias",
       title: "Notícias / Publicações",
       description: "Veja e publique novidades da ADAE-MT.",

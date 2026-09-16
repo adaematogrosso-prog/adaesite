@@ -8,6 +8,13 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { mergeProfileExtraFields } from "@/lib/members/profile-fields";
 import { normalizeProfileTextFields } from "@/lib/members/profile-text";
+import { ALUMNI_COLLEGES_MT } from "@/lib/demolay/alumni-colleges-mt";
+import { DEMOLAY_CHAPTERS_MT } from "@/lib/demolay/chapters-mt";
+import {
+  formatAlumniCollegeLabel,
+  formatChapterLabel,
+  validateOrganizationSelection,
+} from "@/lib/demolay/organizations";
 import type { MemberProfile } from "@/types/database";
 
 const BUCKET = "adae-executive-photos";
@@ -182,6 +189,7 @@ function mergeProfileFields(
   formData: FormData,
   existing: MemberProfile | null,
   user: User,
+  allowCustomOrganizations: boolean,
 ): ProfileUpdateData | { error: string } {
   const rawFullName = (formData.get("fullName") as string)?.trim();
   const rawPhone = (formData.get("phone") as string)?.trim();
@@ -203,11 +211,35 @@ function mergeProfileFields(
     }
   }
 
+  const alumniCollegeResult = validateOrganizationSelection(
+    rawAlumniCollege || existing?.alumni_college,
+    ALUMNI_COLLEGES_MT,
+    formatAlumniCollegeLabel,
+    allowCustomOrganizations,
+    "colégio alumni",
+  );
+
+  if (!alumniCollegeResult.ok) {
+    return { error: alumniCollegeResult.error };
+  }
+
+  const chapterResult = validateOrganizationSelection(
+    rawChapterName || existing?.chapter_name,
+    DEMOLAY_CHAPTERS_MT,
+    formatChapterLabel,
+    allowCustomOrganizations,
+    "capítulo DeMolay",
+  );
+
+  if (!chapterResult.ok) {
+    return { error: chapterResult.error };
+  }
+
   const normalized = normalizeProfileTextFields({
     full_name: rawFullName || resolveDefaultFullName(user, existing),
     city: rawCity || existing?.city || null,
-    alumni_college: rawAlumniCollege || existing?.alumni_college || null,
-    chapter_name: rawChapterName || existing?.chapter_name || null,
+    alumni_college: alumniCollegeResult.value,
+    chapter_name: chapterResult.value,
     profession: extraFields.profession,
   });
 
@@ -312,14 +344,20 @@ async function persistProfileUpdate(
 export async function updateMemberProfile(
   formData: FormData,
 ): Promise<ActionResult> {
-  const { user, profile, hasPanelAccess } = await requireSelfProfileEditor();
+  const { user, profile, hasPanelAccess, canApprove, isAdmin } =
+    await requireSelfProfileEditor();
   const existingProfile = await loadProfileForSave(
     user.id,
     profile,
     hasPanelAccess,
   );
 
-  const parsed = mergeProfileFields(formData, existingProfile, user);
+  const parsed = mergeProfileFields(
+    formData,
+    existingProfile,
+    user,
+    canApprove || isAdmin,
+  );
 
   if ("error" in parsed) {
     return { error: parsed.error };

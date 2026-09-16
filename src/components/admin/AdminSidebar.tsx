@@ -83,11 +83,6 @@ export function AdminSidebar({
 
   const mainItems: NavItem[] = [
     { href: "/admin", label: "Início", exact: true, show: true },
-    {
-      href: "/admin/membros",
-      label: "Membros ADAE-MT",
-      show: canApprove || isAdmin,
-    },
     { href: "/admin/adesoes", label: "Adesões / Cadastro", show: canApprove },
     {
       href: "/admin/noticias",

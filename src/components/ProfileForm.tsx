@@ -9,7 +9,14 @@ import {
 } from "@/actions/profile";
 import { ProfilePasswordForm } from "@/components/ProfilePasswordForm";
 import { MemberProfileExtraFields } from "@/components/MemberProfileExtraFields";
+import { DemolayOrganizationSelect } from "@/components/DemolayOrganizationSelect";
 import { formatCep } from "@/lib/format";
+import { ALUMNI_COLLEGES_MT } from "@/lib/demolay/alumni-colleges-mt";
+import { DEMOLAY_CHAPTERS_MT } from "@/lib/demolay/chapters-mt";
+import {
+  formatAlumniCollegeLabel,
+  formatChapterLabel,
+} from "@/lib/demolay/organizations";
 import { isMasonToFormValue } from "@/lib/members/profile-fields";
 import {
   formatCity,
@@ -367,47 +374,29 @@ export function ProfileForm({
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <label
-                htmlFor="profile-alumni-college"
-                className="block text-sm font-medium text-foreground"
-              >
-                Colégio Alumni afiliado
-              </label>
-              <input
-                id="profile-alumni-college"
-                name="alumniCollege"
-                type="text"
-                value={alumniCollege}
-                onChange={(e) => setAlumniCollege(e.target.value)}
-                onBlur={() =>
-                  setAlumniCollege((value) => formatOrganizationName(value))
-                }
-                className="mt-1 w-full rounded-lg border border-gold/20 px-4 py-2.5 outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/20"
-                placeholder="Nome do colégio alumni"
-              />
-            </div>
+            <DemolayOrganizationSelect
+              id="profile-alumni-college"
+              name="alumniCollege"
+              label="Colégio Alumni afiliado"
+              value={alumniCollege}
+              options={ALUMNI_COLLEGES_MT}
+              formatLabel={formatAlumniCollegeLabel}
+              onValueChange={setAlumniCollege}
+              placeholder="Selecione o colégio alumni"
+              customPlaceholder="Ex.: Colégio Alumni Nome nº 000"
+            />
 
-            <div>
-              <label
-                htmlFor="profile-chapter"
-                className="block text-sm font-medium text-foreground"
-              >
-                Capítulo
-              </label>
-              <input
-                id="profile-chapter"
-                name="chapterName"
-                type="text"
-                value={chapterName}
-                onChange={(e) => setChapterName(e.target.value)}
-                onBlur={() =>
-                  setChapterName((value) => formatOrganizationName(value))
-                }
-                className="mt-1 w-full rounded-lg border border-gold/20 px-4 py-2.5 outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/20"
-                placeholder="Nome do capítulo DeMolay"
-              />
-            </div>
+            <DemolayOrganizationSelect
+              id="profile-chapter"
+              name="chapterName"
+              label="Capítulo DeMolay"
+              value={chapterName}
+              options={DEMOLAY_CHAPTERS_MT}
+              formatLabel={formatChapterLabel}
+              onValueChange={setChapterName}
+              placeholder="Selecione o capítulo"
+              customPlaceholder="Ex.: Capítulo Nome nº 000"
+            />
           </div>
 
           <MemberProfileExtraFields
